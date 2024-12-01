@@ -1,8 +1,9 @@
-def duration_to_seconds(duration_str):
+def duration_to_seconds(duration_str, workout_id=None):
     """
     Convert a duration string in HH:MM:SS, MM:SS, or SS format to total seconds.
     Parameters:
         duration_str (str): The duration in string format.
+        workout_id (optional): ID of the workout, useful for tracking errors.
     Returns:
         int or None: The duration in seconds, or None if invalid.
     """
@@ -19,5 +20,5 @@ def duration_to_seconds(duration_str):
         else:
             return None
     except Exception as e:
-        print(f"Error converting duration '{duration_str}': {e}")
+        print(f"Error converting duration '{duration_str}' for workout ID {workout_id}: {e}")
         return None
