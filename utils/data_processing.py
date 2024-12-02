@@ -70,3 +70,30 @@ def is_valid_time_format(time_str):
         except ValueError:
             return False
     return False
+
+def impute_missing_values(df, column_name):
+    """
+    Imputes missing values in a specified column based on the mean of valid values for rows with the same date.
+    If no valid values are found for the same date, imputes 0.
+
+    Parameters:
+        df (pandas.DataFrame): The dataframe containing the data.
+        column_name (str): The name of the column to process (e.g., 'Elevation Gain (m)', 'Temperature').
+        
+    Returns:
+        df (pandas.DataFrame): The dataframe with missing values imputed.
+    """
+    missing_data = df[df[column_name].isnull()]
+
+    for idx, row in missing_data.iterrows():
+        same_date_rows = df[df['Date'] == row['Date']]
+
+        valid_rows = same_date_rows[same_date_rows[column_name].notnull()]
+
+        if not valid_rows.empty:
+            mean_value = valid_rows[column_name].mean()
+            df.at[idx, column_name] = mean_value
+        else:
+            df.at[idx, column_name] = 0
+    
+    return df
