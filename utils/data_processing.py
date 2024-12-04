@@ -97,3 +97,21 @@ def impute_missing_values(df, column_name):
             df.at[idx, column_name] = 0
     
     return df
+
+def seconds_to_minutes(seconds):
+    """
+    Convert a time duration in seconds to a string in 'MM:SS' format.
+    
+    Parameters:
+        seconds (int): The time duration in seconds to be converted.
+        
+    Returns:
+        str: A string representing the time in 'MM:SS' format.
+    
+    Example:
+        seconds_to_minutes(215)
+        Returns: '03:35'
+    """
+    minutes = int(seconds // 60) 
+    remaining_seconds = int(seconds % 60)
+    return f"{minutes:02}:{remaining_seconds:02}"
