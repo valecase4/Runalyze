@@ -115,3 +115,27 @@ def seconds_to_minutes(seconds):
     minutes = int(seconds // 60) 
     remaining_seconds = int(seconds % 60)
     return f"{minutes:02}:{remaining_seconds:02}"
+
+def get_season(date):
+    """
+    Determine the season for a given date.
+
+    Parameters:
+        date (datetime): The date for which to determine the season.
+        
+    Returns:
+        str: The season corresponding to the date ('Winter', 'Spring', 'Summer', 'Autumn').
+
+    Example:
+        get_season(datetime(2024, 7, 15))
+        Returns: 'Summer'
+    """
+    month = date.month
+    if month in [12, 1, 2]:
+        return 'Winter'
+    elif month in [3, 4, 5]:
+        return 'Spring'
+    elif month in [6, 7, 8]:
+        return 'Summer'
+    elif month in [9, 10, 11]:
+        return 'Autumn'
