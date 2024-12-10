@@ -1,0 +1,42 @@
+body {
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
+}
+
+h1, h3 {
+    color: white;
+}
+
+.header {
+    text-align: center;
+}
+
+#_dash-app-content {
+    display: flex;
+    justify-content: center;
+}
+
+#content {
+    background-color: #2e2e2e;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+button {
+    background-color: #FF7F50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+}
