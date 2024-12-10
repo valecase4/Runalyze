@@ -9,18 +9,25 @@ body {
 
 h1, h3 {
     color: white;
+    text-align: center;
 }
 
 .header {
     text-align: center;
 }
 
-#_dash-app-content {
+#_dash-app-content > div {
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 
 #content {
+    position: relative;
+    left: -100%;
+    opacity: 0;
+    transition: all 0.5 ease;
+    margin-top: 40px;
     background-color: #2e2e2e;
     color: white;
     display: flex;
@@ -28,6 +35,11 @@ h1, h3 {
     justify-content: center;
     align-items: center;
     padding: 20px;
+}
+
+#content.show {
+    left: 0;
+    opacity: 1;
 }
 
 button {
@@ -39,4 +51,8 @@ button {
     padding: 10px 20px;
     cursor: pointer;
     margin-top: 20px;
+}
+
+#section-2 {
+    margin-top: 40px;
 }
