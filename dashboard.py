@@ -26,8 +26,32 @@ app.layout = html.Div([
             # html.Div(id='workoutsss')
             dcc.Graph(id='my-graph-output')
         ]
-        )
+    ),
+    html.Div(
+        id='slider-div',
+        children=[
+            html.H1("Range Slider Section"),
+            dcc.RangeSlider(
+                min=df['Workout ID'].min(),
+                max=df['Workout ID'].max(),
+                step=1,
+                marks={str(id): str(id) for id in df['Workout ID']},
+                value=[df['Workout ID'].min(), df['Workout ID'].max()],
+                id='input-slider'
+            ),
+            html.P(id='range-output')
+        ]
+    )
 ])
+
+@callback(
+    Output('range-output', 'children'),
+    Input('input-slider', 'value')
+)
+def average_distance_per_range(range_slider_value):
+    filtered_df = df[(df['Workout ID'] >= range_slider_value[0]) & (df['Workout ID'] <= range_slider_value[1])]
+    average_distance = filtered_df['Distance (km)'].mean()
+    return f"Average Distance for the selected Range: {round(average_distance, 2)}"
 
 @callback(
     Output(component_id='my-graph-output', component_property='figure'),
