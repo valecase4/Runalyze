@@ -51,6 +51,12 @@ input {
     justify-content: center;
     align-items: center;
     gap: 10px;
+    flex-direction: column;
+}
+
+#workouts-per-year p {
+    border: 1px solid white;
+    padding: 20px;
 }
 
 p {

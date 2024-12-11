@@ -4,6 +4,7 @@ import pandas as pd
 from dash_extensions import EventListener
 from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import DashProxy, State
+import plotly.express as px
 
 df = pd.read_csv("data/raw/training_data.csv")
 
@@ -22,23 +23,47 @@ app.layout = html.Div([
         id='workouts-per-year',
         children=[
             dcc.Dropdown(options=['2023', '2024'], value='2023', id='year-input'),
-            html.P(id='wks-per-year-output')
+            # html.Div(id='workoutsss')
+            dcc.Graph(id='my-graph-output')
         ]
         )
 ])
 
 @callback(
-    Output(component_id='wks-per-year-output', component_property='children'),
+    Output(component_id='my-graph-output', component_property='figure'),
     Input(component_id='year-input', component_property='value')
 )
 def wks_per_year(dropdown_value):
-    counter = 0
-    for _, row in df.iterrows():
-        if (row['Date'].split("/")[2]) == dropdown_value:
-            counter += 1
-    # filtered_df = df[str(df['Date']).split('/')[-1] == str(dropdown_value)]
-    # return f"In {dropdown_value} you performed {filtered_df.shape[0]}"
-    return f"In {dropdown_value} you performed {counter} workouts."
+    # counter = 0
+    # for _, row in df.iterrows():
+    #     if (row['Date'].split("/")[2]) == dropdown_value:
+    #         counter += 1
+    # # filtered_df = df[str(df['Date']).split('/')[-1] == str(dropdown_value)]
+    # # return f"In {dropdown_value} you performed {filtered_df.shape[0]}"
+    # return f"In {dropdown_value} you performed {counter} workouts."
+
+    # workouts = []
+
+    df['Date'] = pd.to_datetime(df['Date'])
+    filtered = df[df['Date'].dt.year == int(dropdown_value)]
+
+    workouts_per_month = filtered.groupby(df['Date'].dt.month).size()
+    
+    # for _, row in filtered.iterrows():
+    #     workouts.append(
+    #         html.P(f"{row['Date']} --> {row['Distance (km)']}")
+    #     )
+
+    # return workouts
+
+    fig = px.bar(
+        workouts_per_month, 
+        title=f'Number of Workouts per Month based on Year {dropdown_value}', 
+    )
+    fig.update_layout(transition_duration=500)
+
+    return fig
+
 
 @callback(
     Output(component_id='workout-list', component_property='children'),
