@@ -17,8 +17,28 @@ app.layout = html.Div([
             dcc.Input(id='my-input', placeholder='Distance (km)', type='number', min=0, max=50),
         ]
     ),
-    html.Div(id='workout-list')
+    html.Div(id='workout-list'),
+    html.Div(
+        id='workouts-per-year',
+        children=[
+            dcc.Dropdown(options=['2023', '2024'], value='2023', id='year-input'),
+            html.P(id='wks-per-year-output')
+        ]
+        )
 ])
+
+@callback(
+    Output(component_id='wks-per-year-output', component_property='children'),
+    Input(component_id='year-input', component_property='value')
+)
+def wks_per_year(dropdown_value):
+    counter = 0
+    for _, row in df.iterrows():
+        if (row['Date'].split("/")[2]) == dropdown_value:
+            counter += 1
+    # filtered_df = df[str(df['Date']).split('/')[-1] == str(dropdown_value)]
+    # return f"In {dropdown_value} you performed {filtered_df.shape[0]}"
+    return f"In {dropdown_value} you performed {counter} workouts."
 
 @callback(
     Output(component_id='workout-list', component_property='children'),
