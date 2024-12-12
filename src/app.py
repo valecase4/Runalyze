@@ -13,7 +13,7 @@ app.layout = html.Div([
     html.Div(
         id="section1",
         children=[
-            html.H1("Data Overview"),
+            html.H1("Data Overview", id='title-section-1'),
             dcc.Dropdown([
                 'General', 
                 f'Last Month: {get_last_month(df)}',
@@ -53,42 +53,33 @@ app.layout = html.Div([
         ]
     )
 ])
+
+# Manage dropdown menu behavior
     
 @callback(
     Output('total-km', component_property='children'),
-    Input('select-overview', component_property='value')
-)
-def update_overview(value):
-    if value != 'General':
-        last_year = int(str(value.split(":")[-1]).strip())
-        print(last_year)
-        return f"{total_km_last_year(df, last_year)}"
-    else:
-        return total_km(df)
-    
-@callback(
     Output('total-calories', component_property='children'),
-    Input('select-overview', component_property='value')
-)
-def update_overview(value):
-    if value != 'General':
-        last_year = int(str(value.split(":")[-1]).strip())
-        print(last_year)
-        return f"{total_calories_last_year(df, last_year)}"
-    else:
-        return total_calories(df)
-    
-@callback(
     Output('total-workouts', component_property='children'),
+    Output('title-section-1', component_property='children'),
     Input('select-overview', component_property='value')
 )
 def update_overview(value):
     if value != 'General':
         last_year = int(str(value.split(":")[-1]).strip())
         print(last_year)
-        return f"{total_workouts_last_year(df, last_year)}"
+        return [
+            f"{total_km_last_year(df, last_year)}", 
+            f"{total_calories_last_year(df, last_year)}",
+            f"{total_workouts_last_year(df, last_year)}",
+            f"Overview of Your Last Year: {last_year}"
+        ]
     else:
-        return total_workouts(df)
+        return [
+            total_km(df), 
+            total_calories(df),
+            total_workouts(df),
+            "Overview"
+        ]
 
 if __name__ == '__main__':
     app.run_server(debug=True)

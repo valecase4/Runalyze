@@ -35,8 +35,6 @@ def total_workouts_last_year(df, last_year):
     during the last year
     """
     filtered = df[df['Date'].dt.year == last_year]
-    print(filtered.shape)
-    print(filtered)
     return filtered.shape[0]
 
 def get_monthly_workouts(df):
