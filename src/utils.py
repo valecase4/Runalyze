@@ -4,7 +4,9 @@ def total_km(df):
     return round(df['Distance (km)'].sum(), 2)
 
 def total_calories(df):
-    return df['Calories (kcal)'].sum()
+    calories = df['Calories (kcal)'].sum()
+    formatted_value = f"{calories:,}".replace(",", ".")
+    return formatted_value
 
 def total_workouts(df):
     return df.shape[0]
@@ -35,3 +37,30 @@ def get_monthly_workouts(df):
     monthly_counts = monthly_counts.reindex(full_range_index, fill_value=0)
 
     return monthly_counts
+
+def get_last_year(df):
+    """
+    Retrieve the last year available in the dataset based on the latest workout date.
+
+    Parameters:
+        df (pd.DataFrame): The input dataframe containing a 'Date' column.
+
+    Returns:
+        int: The last year available in the dataset.
+    """
+    df['Date'] = pd.to_datetime(df['Date'])
+    return df['Date'].dt.year.max()
+
+def get_last_month(df):
+    """
+    Retrieve the last month and year available in the dataset based on the latest workout date.
+
+    Parameters:
+        df (pd.DataFrame): The input dataframe containing a 'Date' column.
+
+    Returns:
+        str: The last month and year in the format 'MMM YY' (e.g., 'Dec 24').
+    """
+    df['Date'] = pd.to_datetime(df['Date'])
+    last_date = df['Date'].max()
+    return last_date.strftime('%b %y')

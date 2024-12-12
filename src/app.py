@@ -1,7 +1,7 @@
 from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import pandas as pd
-from utils import total_km, total_calories, total_workouts
+from utils import total_km, total_calories, total_workouts, get_last_month, get_last_year
 from graphs import workouts_per_month
 
 df = pd.read_csv("../data/raw/training_data.csv")
@@ -13,6 +13,15 @@ app.layout = html.Div([
     html.Div(
         id="section1",
         children=[
+            html.H1("Data Overview"),
+            dcc.Dropdown([
+                'General', 
+                f'Last Month: {get_last_month(df)}',
+                f'Last Year: {get_last_year(df)}'
+                ], 
+                id='select-overview',
+                value='General'
+                ),
             html.Div(id='stats-div', children=[
                 html.Div([
                     html.Img(src='/assets/media/running.png'),

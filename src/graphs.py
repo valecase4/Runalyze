@@ -21,12 +21,18 @@ def workouts_per_month(df):
         title="Monthly Workout Trend",
     )
 
+    fig.update_traces(
+        line=dict(color='cyan', width=1, dash='solid')
+    )
+
     fig.update_layout(
         xaxis_title="Month",
         yaxis_title="Number of Workouts",
         template="plotly_dark",
         plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0, 0, 0, 0)"
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        hovermode='x unified',
+        margin=dict(l=40,r=20,t=60,b=40)
     )
 
     print("Data Type:", type(fig))
