@@ -30,6 +30,9 @@ app.layout = html.Div([
                 ], className='card')
             ])
         ]
+    ),
+    html.Div(
+        id='section2'
     )
 ])
 
