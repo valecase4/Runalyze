@@ -15,35 +15,44 @@ body {
 #section1 {
     width: 100%;
     padding: 20px;
-    background-color: rgb(49, 49, 49);
+    background-color: #111517;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
+    height: 100vh;
 }
 
-#section1 h1,
 #section1 h3
 {
     cursor: pointer;
     color: white;
+    font-size: 1rem;
 }
 
 #stats-div {
     width: 100%;
     display: flex;
     padding: 50px;
-    height: 90vh;
 } 
 
 .card {
     width: 33%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     cursor: pointer;
+    border: 1px solid rgb(226, 226, 226);
+    margin: 0px 10px;
+    border-radius: 1rem;
+    padding: 20px;
+    background: linear-gradient(145deg, #1b1b1b, #303030);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card img {
+    padding: 0 20px;
 }
 
 .card h3 {
@@ -52,9 +61,9 @@ body {
 }
 
 .card .display-total {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: rgb(0, 190, 32);
+    padding: 0px 20px;
 }
 
 #graph-section1 {

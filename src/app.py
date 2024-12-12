@@ -12,19 +12,21 @@ app.layout = html.Div([
     html.Div(
         id="section1",
         children=[
-            html.H1("Workout Data Analysis"),
             html.Div(id='stats-div', children=[
                 html.Div([
+                    html.Img(src='/assets/media/running.png'),
                     html.H3("Total Distance (km):"),
-                    html.Div(className='display-total', id='total-km', children=total_km(df))
+                    html.Div(className='display-total', id='total-km', children=f"{total_km(df)} km")
                 ], className='card'),
                 html.Div([
+                    html.Img(src='/assets/media/flame.png'),
                     html.H3("Total Calories Burned:"),
-                    html.Div(className='display-total', children=total_calories(df))
+                    html.Div(className='display-total', id='total-calories', children=f"{total_calories(df)} kcal")
                 ], className='card'),
                 html.Div([
+                    html.Img(src='/assets/media/calendar.png'),
                     html.H3("Workouts Performed:"),
-                    html.Div(className='display-total', children=total_workouts(df))
+                    html.Div(className='display-total', id='total-workouts', children=total_workouts(df))
                 ], className='card')
             ])
         ]
