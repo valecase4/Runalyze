@@ -1,7 +1,7 @@
 from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import pandas as pd
-from utils import total_km, total_calories, total_workouts, get_last_month, get_last_year
+from utils import *
 from graphs import workouts_per_month
 
 df = pd.read_csv("../data/raw/training_data.csv")
@@ -53,6 +53,42 @@ app.layout = html.Div([
         ]
     )
 ])
+    
+@callback(
+    Output('total-km', component_property='children'),
+    Input('select-overview', component_property='value')
+)
+def update_overview(value):
+    if value != 'General':
+        last_year = int(str(value.split(":")[-1]).strip())
+        print(last_year)
+        return f"{total_km_last_year(df, last_year)}"
+    else:
+        return total_km(df)
+    
+@callback(
+    Output('total-calories', component_property='children'),
+    Input('select-overview', component_property='value')
+)
+def update_overview(value):
+    if value != 'General':
+        last_year = int(str(value.split(":")[-1]).strip())
+        print(last_year)
+        return f"{total_calories_last_year(df, last_year)}"
+    else:
+        return total_calories(df)
+    
+@callback(
+    Output('total-workouts', component_property='children'),
+    Input('select-overview', component_property='value')
+)
+def update_overview(value):
+    if value != 'General':
+        last_year = int(str(value.split(":")[-1]).strip())
+        print(last_year)
+        return f"{total_workouts_last_year(df, last_year)}"
+    else:
+        return total_workouts(df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -1,8 +1,8 @@
 import pandas as pd
-from utils import get_monthly_workouts
+from utils import get_monthly_workouts, total_km_last_year, get_last_year, total_calories_last_year
 
 df = pd.read_csv("../data/raw/training_data.csv")
 
-temp_range = get_monthly_workouts(df)
+last_year = get_last_year(df)
 
-print(temp_range)
+print(total_calories_last_year(df, last_year))

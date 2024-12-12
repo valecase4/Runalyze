@@ -11,6 +11,34 @@ def total_calories(df):
 def total_workouts(df):
     return df.shape[0]
 
+def total_km_last_year(df, last_year):
+    """
+    Calculate the sum of kilometers for the workouts performed 
+    during the last year
+    """
+    filtered = df[df['Date'].dt.year == last_year]
+    return round(filtered['Distance (km)'].sum(), 2)
+
+def total_calories_last_year(df, last_year):
+    """
+    Calculate the sum of calories for the workouts performed 
+    during the last year
+    """
+    filtered = df[df['Date'].dt.year == last_year]
+    calories = filtered['Calories (kcal)'].sum()
+    formatted_value = f"{calories:,}".replace(",", ".")
+    return formatted_value
+
+def total_workouts_last_year(df, last_year):
+    """
+    Calculate the number of workouts performed
+    during the last year
+    """
+    filtered = df[df['Date'].dt.year == last_year]
+    print(filtered.shape)
+    print(filtered)
+    return filtered.shape[0]
+
 def get_monthly_workouts(df):
     """
     Calculate the number of workouts per month, including months with no workouts.
@@ -64,3 +92,4 @@ def get_last_month(df):
     df['Date'] = pd.to_datetime(df['Date'])
     last_date = df['Date'].max()
     return last_date.strftime('%b %y')
+
