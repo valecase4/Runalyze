@@ -2,6 +2,7 @@ from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import pandas as pd
 from utils import total_km, total_calories, total_workouts
+from graphs import workouts_per_month
 
 df = pd.read_csv("../data/raw/training_data.csv")
 
@@ -32,7 +33,15 @@ app.layout = html.Div([
         ]
     ),
     html.Div(
-        id='section2'
+        id='section2',
+        children=[
+            html.Div(
+                id='trend-line-graph-container',
+                children=[
+                    dcc.Graph(figure=workouts_per_month(df))
+                ]
+            )
+        ]
     )
 ])
 

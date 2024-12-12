@@ -41,7 +41,7 @@ body {
     width: 33%;
     cursor: pointer;
     border: 1px solid rgb(226, 226, 226);
-    margin: 0px 10px;
+    margin: 0px 30px;
     border-radius: 1rem;
     padding: 20px;
     background: linear-gradient(145deg, #1b1b1b, #303030);
@@ -49,6 +49,11 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+}
+
+/* Effect on hovering */
+.card:hover {
+    transform: scale(1.1);
 }
 
 .card img {
@@ -90,4 +95,12 @@ body {
 #section2 {
     width: 100%;
     height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#section2 > #trend-line-graph-container {
+    width: 100%;
 }
