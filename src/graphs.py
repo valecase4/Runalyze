@@ -48,7 +48,6 @@ def workout_distribution_by_distance(df):
         y=workouts_per_category.keys(),
         orientation='h',
         title="Workout Distribution",
-        height=400
     )
 
     fig.update_layout(
