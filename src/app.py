@@ -2,7 +2,7 @@ from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import pandas as pd
 from utils import *
-from graphs import workouts_per_month
+from graphs import *
 import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
@@ -19,7 +19,7 @@ grid = dag.AgGrid(
         {"field": "Average Pace (min/km)", "sortable": True, "filter": True},
         {"field": "Distance (km)", "sortable": True, "filter": True}
     ],
-    className="ag-theme-balham-dark"
+    className="ag-theme-alpine-dark"
 )
 
 app.layout = html.Div([
@@ -59,19 +59,51 @@ app.layout = html.Div([
         id='section2',
         children=[
             html.Div(
-                id='trend-line-graph-container',
+                id='container-section-2',
                 children=[
-                    dcc.Graph(figure=workouts_per_month(df))
+                    html.Div(
+                        id='longest-workout-container',
+                        children=[
+                            html.Img(src='/assets/media/trend.png', style={"cursor": "pointer"}),
+                            html.Div(
+                                children=[
+                                    html.P("Longest Workout", 
+                                           style={"fontWeight": "bold", "color":"white", "fontSize": "20px", "cursor": "pointer"}
+                                           ),
+                                    html.P(f"{get_longest_workout(df)}", 
+                                           style={"fontWeight": "500", "color": "white", "cursor": "pointer"}
+                                           )
+                                ]
+                            )
+                        ]
+                    ),
+                    html.Div(
+                        id='section-2-title',
+                        children=[
+                            html.H3("Workout Distribution By Distance")
+                        ]
+                    ),
+                    html.Div(
+                        id='section-2-graph',
+                        children=[
+                            html.Div(
+                                className="graph",
+                                children=[
+                                    dcc.Graph(figure=workout_distribution_by_distance(df))
+                                ]
+                            )
+                        ]
+                    )
                 ]
             )
         ]
     ),
-    html.Div(
-        id='section3',
-        children=[
-            grid
-        ]
-    )
+    # html.Div(
+    #     id='section3',
+    #     children=[
+    #         grid
+    #     ]
+    # )
 ])
 
 # Manage dropdown menu behavior

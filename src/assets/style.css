@@ -123,15 +123,45 @@ body {
 
 #section2 {
     width: 100%;
-    height: 100vh;
     padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    max-height: 100vh;
 }
 
-#section2 > #trend-line-graph-container {
+#container-section-2 {
     width: 100%;
+    height: 100%;
+}
+
+#longest-workout-container {
+    width: 100%;
+    display: flex;
+    padding: 40px;
+}
+
+#longest-workout-container > div {
+    width: 100%;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#section-2-title {
+    color: white;
+    padding: 0px 40px;
+}
+
+#section-2-graph {
+    width: 100%;
+    height: 100%;
+    padding: 20px 40px;
+}
+
+#section-2-graph > .graph {
+    width: 100%;
+    height: 100%;
+    background-color: green;
+    margin-top: 20px;
 }
 
 /* SECTION 3 */
@@ -143,17 +173,4 @@ body {
     justify-content: center;
     background-color: #111517;
     align-items: center;
-}
-
-#get-started {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#get-started > div {
-    margin: auto 0;
-    width: 50%;
-    font-size: 1.25rem;
 }

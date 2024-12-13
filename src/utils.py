@@ -133,3 +133,67 @@ def get_last_month(df):
     last_date = df['Date'].max()
     return last_date.strftime('%b %Y')
 
+def get_longest_workout(df):
+    """
+    Return distance and duration of the longest workout in the dataset
+    """
+    best_row= df.sort_values("Distance (km)", ascending=False).iloc[0]
+    return f"{best_row['Distance (km)']} km - {best_row['Duration (min)']}"
+
+def get_distance_category(distance):
+    """
+    Assign a distance category based on the input distance.
+
+    Categories:
+    - 0-2 km
+    - 2-4 km
+    - 4-6 km
+    - 6-8 km
+    - 8-10 km
+
+    Parameters:
+        distance (float): The distance value in kilometers.
+
+    Returns:
+        str: The category label (e.g., '0-2 km') or 'Unknown' if out of range.
+    """
+    distance = int(distance)
+    if 0 <= distance < 2:
+        return '0-2 km'
+    elif 2 <= distance < 4:
+        return '2-4 km'
+    elif 4 <= distance < 6:
+        return '4-6 km'
+    elif 6 <= distance < 8:
+        return '6-8 km'
+    elif 8 <= distance <= 10:
+        return '8-10 km'
+    else:
+        return 'Unknown'
+
+
+def count_workouts_by_distance_category(df):
+    """
+    Calculate the distribution of workouts into distance categories.
+
+    Categories:
+    - 0-2 km
+    - 2-4 km
+    - 4-6 km
+    - 6-8 km
+    - 8-10 km
+
+    Parameters:
+        df (pd.DataFrame): The input dataframe containing a 'Distance (km)' column.
+
+    Returns:
+        dict: A dictionary where keys are category labels (e.g., '0-2 km') 
+              and values are the count of workouts in each category.
+    """
+
+    df['Category'] = df['Distance (km)'].apply(get_distance_category)
+    print(df.groupby("Category").size())
+
+    category_counts = df['Category'].value_counts().sort_index()
+
+    return dict(sorted(category_counts.to_dict().items(), key=lambda x: x[1]))
