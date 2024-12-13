@@ -65,14 +65,36 @@ app.layout = html.Div([
 )
 def update_overview(value):
     if value != 'General':
-        last_year = int(str(value.split(":")[-1]).strip())
-        print(last_year)
-        return [
-            f"{total_km_last_year(df, last_year)}", 
-            f"{total_calories_last_year(df, last_year)}",
-            f"{total_workouts_last_year(df, last_year)}",
-            f"Overview of Your Last Year: {last_year}"
-        ]
+        my_value = value.split(":")[1].strip()
+        
+        if len(my_value.split(" ")) == 2:
+            last_month, last_year = get_month_index_by_name(my_value.split(" ")[0]), int(my_value.split(" ")[1])
+            return [
+                f"{total_km_last_month(df, last_month, last_year)}",
+                f"{total_calories_last_month(df, last_month, last_year)}",
+                f"{total_workouts_last_month(df, last_month, last_year)}",
+                f"Overview of Your Last Month: {last_month, last_year}"
+            ]
+        else:
+            last_year = int(my_value)
+            return [
+                f"{total_km_last_year(df, last_year)}", 
+                f"{total_calories_last_year(df, last_year)}",
+                f"{total_workouts_last_year(df, last_year)}",
+                f"Overview of Your Last Year: {last_year}"
+            ]
+        
+        # if len(value.split(" ")) == 2: # last month (e.g. Dec 2024)
+        #     print(value)
+        # else:
+        #     last_year = int(str(value.split(":")[-1]).strip())
+        #     print(last_year)
+        #     return [
+        #         f"{total_km_last_year(df, last_year)}", 
+        #         f"{total_calories_last_year(df, last_year)}",
+        #         f"{total_workouts_last_year(df, last_year)}",
+        #         f"Overview of Your Last Year: {last_year}"
+        #     ]
     else:
         return [
             total_km(df), 

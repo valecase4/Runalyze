@@ -9,7 +9,49 @@ def total_calories(df):
     return formatted_value
 
 def total_workouts(df):
-    return df.shape[0]
+    return df.drop_duplicates(subset='Date', keep='first').shape[0]
+
+def get_month_index_by_name(month_name):
+    month_values = {
+        "Jan": 1,
+        "Feb": 2,
+        "Mar": 3,
+        "Apr": 4,
+        "May": 5,
+        "Jun": 6,
+        "Jul": 7,
+        "Aug": 8,
+        "Sep": 9,
+        "Oct": 10,
+        "Nov": 11,
+        "Dec": 12 
+    }
+
+    return month_values[month_name]
+
+def total_km_last_month(df, last_month, last_year):
+    """
+    Calculate the sum of kilometers for the workouts performed 
+    during the last month
+    """
+    filtered = df[(df['Date'].dt.month == last_month) & (df['Date'].dt.year == last_year)]
+    return round(filtered['Distance (km)'].sum(), 2)
+
+def total_calories_last_month(df, last_month, last_year):
+    """
+    Calculate the sum of calories burned for the workouts performed 
+    during the last month
+    """
+    filtered = df[(df['Date'].dt.month == last_month) & (df['Date'].dt.year == last_year)]
+    return filtered['Calories (kcal)'].sum()
+
+def total_workouts_last_month(df, last_month, last_year):
+    """
+    Calculate the number of workouts performed
+    during the last month
+    """
+    filtered = df[(df['Date'].dt.month == last_month) & (df['Date'].dt.year == last_year)].drop_duplicates(subset='Date', keep='first')
+    return filtered.shape[0]
 
 def total_km_last_year(df, last_year):
     """
@@ -34,7 +76,7 @@ def total_workouts_last_year(df, last_year):
     Calculate the number of workouts performed
     during the last year
     """
-    filtered = df[df['Date'].dt.year == last_year]
+    filtered = df[df['Date'].dt.year == last_year].drop_duplicates(subset='Date', keep='first')
     return filtered.shape[0]
 
 def get_monthly_workouts(df):
@@ -89,5 +131,5 @@ def get_last_month(df):
     """
     df['Date'] = pd.to_datetime(df['Date'])
     last_date = df['Date'].max()
-    return last_date.strftime('%b %y')
+    return last_date.strftime('%b %Y')
 
