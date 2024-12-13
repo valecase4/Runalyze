@@ -141,6 +141,8 @@ body {
     height: 100vh;
     display: flex;
     justify-content: center;
+    background-color: #111517;
+    align-items: center;
 }
 
 #get-started {
