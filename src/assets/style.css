@@ -46,6 +46,11 @@ body {
     color: white;
 }
 
+.Select.has-value.is-focused>.Select-control>.Select-multi-value-wrapper>.Select-value>span {
+    color: white;
+}
+
+
 /* End of dropdown settings */
 
 #section1 h3
