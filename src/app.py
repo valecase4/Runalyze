@@ -3,10 +3,24 @@ import plotly.express as px
 import pandas as pd
 from utils import *
 from graphs import workouts_per_month
+import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
 
 app = Dash(__name__)
+
+######### TRYINH DASH-AS-GRID COMPONENT LIBRARY
+
+grid = dag.AgGrid(
+    id='get-started',
+    rowData=df.to_dict("records"),
+    columnDefs=[
+        {"field": "Date", "sortable": True, "filter": True},
+        {"field": "Average Pace (min/km)", "sortable": True, "filter": True},
+        {"field": "Distance (km)", "sortable": True, "filter": True}
+    ],
+    className="ag-theme-balham-dark"
+)
 
 app.layout = html.Div([
     html.Script(src='assets/script.js'),
@@ -50,6 +64,12 @@ app.layout = html.Div([
                     dcc.Graph(figure=workouts_per_month(df))
                 ]
             )
+        ]
+    ),
+    html.Div(
+        id='section3',
+        children=[
+            grid
         ]
     )
 ])
