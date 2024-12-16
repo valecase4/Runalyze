@@ -45,9 +45,11 @@ def workout_distribution_by_distance(df):
 
     fig = px.bar(
         x=workouts_per_category.values(),
-        y=workouts_per_category.keys(),
+        y=[f"{category}    " for category in workouts_per_category.keys()], # Add some right spaces to distance yticks and bars
         orientation='h',
         title="Workout Distribution",
+        color=workouts_per_category.values(),
+        color_continuous_scale=["#6BAEDF", "#4C8FD2", "#3E6AA6", "#2E4A75", "#202A44"],
     )
 
     annotations = []
@@ -55,11 +57,17 @@ def workout_distribution_by_distance(df):
     for i, (category, value) in enumerate(workouts_per_category.items()):
         annotations.append(dict(
             x=value/2,
-            y=category,
+            y=f"{category}    ",
             text=str(value),
-            font=dict(size=14,color='white',family="Arial"),
+            font=dict(size=16,color='white'),
             showarrow=False
         ))
+
+    fig.update_traces(
+        hovertemplate="<b>Distance Category</b> %{y}<br>"
+                      "<b>Workouts Completed:</b> %{x}<br>",
+        marker=dict(line=dict(width=0))
+    )
 
     fig.update_layout(
         xaxis_title="Number of Workouts",
@@ -67,17 +75,29 @@ def workout_distribution_by_distance(df):
         title=dict(font=dict(size=20, color="white"), x=0.5),  # Centered title
         xaxis=dict(
             title=dict(font=dict(size=14, color="white")),
-            tickfont=dict(size=12, color="white"),
+            tickfont=dict(size=18, color="white"),
             gridcolor="rgba(50, 50, 50, 0.6)",  # Subtle gridlines
         ),
         yaxis=dict(
             title=dict(font=dict(size=14, color="white")),
-            tickfont=dict(size=12, color="white"),
+            tickfont=dict(size=18, color="white"),
             gridcolor="rgba(50, 50, 50, 0.6)",
+            # padding=10
         ),
         plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
         paper_bgcolor="rgba(20, 20, 30, 1)",  # Dark blue-ish background,
-        annotations=annotations
+        annotations=annotations,
+        coloraxis_colorbar=dict(
+            title="Workouts",
+            titlefont=dict(size=16, color='white'),
+            tickfont=dict(size=12, color='white'),
+            tickcolor="white"
+        ),
+        hoverlabel=dict(
+            font_size=16,
+            font_color="white",
+            bordercolor="rgba(100,100,255,0.8)",
+        )
     )
 
     return fig
