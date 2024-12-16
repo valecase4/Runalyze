@@ -50,7 +50,20 @@ def workout_distribution_by_distance(df):
         title="Workout Distribution",
     )
 
+    annotations = []
+
+    for i, (category, value) in enumerate(workouts_per_category.items()):
+        annotations.append(dict(
+            x=value/2,
+            y=category,
+            text=str(value),
+            font=dict(size=14,color='white',family="Arial"),
+            showarrow=False
+        ))
+
     fig.update_layout(
+        xaxis_title="Number of Workouts",
+        yaxis_title="Distance categories",
         title=dict(font=dict(size=20, color="white"), x=0.5),  # Centered title
         xaxis=dict(
             title=dict(font=dict(size=14, color="white")),
@@ -63,7 +76,8 @@ def workout_distribution_by_distance(df):
             gridcolor="rgba(50, 50, 50, 0.6)",
         ),
         plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
-        paper_bgcolor="rgba(20, 20, 30, 1)",  # Dark blue-ish background
+        paper_bgcolor="rgba(20, 20, 30, 1)",  # Dark blue-ish background,
+        annotations=annotations
     )
 
     return fig
