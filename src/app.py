@@ -9,6 +9,16 @@ df = pd.read_csv("../data/raw/training_data.csv")
 
 app = Dash(__name__)
 
+# Try Dataframe
+
+dataFrame = pd.DataFrame({
+    "Workout ID": [1, 2, 3],
+    "Date": ["2024-12-01", "2024-12-02", "2024-12-03"],
+    "Distance (km)": [5.0, 7.2, 10.0],
+    "Duration (min)": [25, 35, 50],
+    "Calories (kcal)": [300, 400, 600],
+})
+
 ######### TRYINH DASH-AS-GRID COMPONENT LIBRARY
 
 grid = dag.AgGrid(
@@ -99,9 +109,156 @@ app.layout = html.Div([
         ]
     ),
     html.Div(
-        id="section3",
+        id='section3',
         children=[
-            dcc.Graph(figure=average_pace_workouts(df), style={"width": "100%"})
+            html.Div(
+                id='container-section-3',
+                children=[
+                    html.Div(
+                        id='set-goal-container',
+                        children=[
+                            html.Img(src='/assets/media/goal.png', style={"cursor": "pointer"}),
+                            html.Div(
+                                children=[
+                                    html.P("Your Goal", 
+                                           style={"fontWeight": "bold", "color":"white", "fontSize": "20px", "cursor": "pointer"}
+                                           ),
+                                    html.P("5 km - 20:00", 
+                                           style={"fontWeight": "500", "color": "white", "cursor": "pointer"}
+                                           )
+                                ]
+                            )
+                        ]
+                    ),
+                    html.Div(
+                        id='section-3-title',
+                        children=[
+                            html.H3("Average Pace (min/km) per Workout")
+                        ]
+                    ),
+                    html.Div(
+                        id='section-3-graph',
+                        children=[
+                            html.Div(
+                                className="graph",
+                                children=[
+                                    dcc.Graph(figure=average_pace_workouts(df))
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    ),
+    # html.Div(
+    #     id="section4",
+    #     children=[
+    #     dcc.Dropdown(
+    #         id="workout-selector",
+    #         options=[{"label": f"Workout {row['Workout ID']} - {row['Date']}",
+    #                  "value": row["Workout ID"]} for _, row in df.iterrows()],
+    #         placeholder="Select a workout"
+    #     ),
+    #     html.Div(id='workout-details', style={"margin-top": "200px"})
+    # ])
+    html.Div(
+        id="section4",
+        children=[
+            html.Div(
+                id="container-section-4",
+                children=[
+                    html.Div(
+                        id="sub-container-section-4",
+                        children=[
+                            html.Img(src='/assets/media/details.png', style={"cursor": "pointer"}),
+                            html.Div(
+                                children=[
+                                    html.P("Select A Workout", 
+                                           style={"fontWeight": "bold", "color":"white", "fontSize": "20px", "cursor": "pointer"}
+                                           ),
+                                    html.P("Workout Details", 
+                                           style={"fontWeight": "500", "color": "white", "cursor": "pointer"}
+                                           )
+                                ]
+                            )
+                        ]
+                    ),
+                    html.Div(
+                        id="main",
+                        children=[
+                            html.Div(
+                            id='left-sideBar',
+                            children=[
+                                dcc.Dropdown(
+                                    id="workout-selector",
+                                    options=[{"label": f"ID {row['Workout ID']} - {row['Date'].strftime("%y/%m/%d")}",
+                                            "value": row["Workout ID"]} for _, row in df.iterrows()],
+                                    placeholder="Select a workout"
+                                )
+                            ]
+                            ),
+                            html.Div(
+                                id="workout-details",
+                                children=[
+                                    html.Div(
+                                        id="main-details",
+                                        children=[
+                                            html.H5("Main Stats"),
+                                            html.Div(
+                                                className='row',
+                                                children=[
+                                                    html.Div(
+                                                        className="workout-details-card",
+                                                        id='workout-id'
+                                                    ),
+                                                    html.Div(
+                                                        className="workout-details-card",
+                                                        id='workout-date'
+                                                    )
+                                                ]
+                                            ),
+                                            html.Div(
+                                                className="row",
+                                                children=[
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    ),
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    )
+                                                ]
+                                            ),
+                                            html.Div(
+                                                className="row",
+                                                children=[
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    ),
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    )
+                                                ]
+                                            ),
+                                            html.Div(
+                                                className="row",
+                                                children=[
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    ),
+                                                    html.Div(
+                                                        className="workout-details-card"
+                                                    )
+                                                ]
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            )
         ]
     )
     # html.Div(
@@ -113,8 +270,8 @@ app.layout = html.Div([
 ])
 
 # Manage dropdown menu behavior
-    
-@callback(
+
+@app.callback(
     Output('total-km', component_property='children'),
     Output('total-calories', component_property='children'),
     Output('total-workouts', component_property='children'),
@@ -160,6 +317,73 @@ def update_overview(value):
             total_workouts(df),
             "Overview"
         ]
+
+@app.callback(
+    [
+        Output(component_id='workout-id', component_property="children"),
+        Output(component_id='workout-date', component_property='children')
+    ],
+    [Input(component_id="workout-selector", component_property="value")]
+)
+def update_workout_details(selected_id):
+    # if selected_id is None:
+    #     return "Please select a workout to see details."
+    
+    workout = df[df["Workout ID"] == selected_id].iloc[0]
+
+    return [
+        html.Div(
+            children=[
+                html.P("Workout ID"),
+                html.Img(src='/assets/media/details.png'),
+                html.P(f"{workout["Workout ID"]}")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.P("Date"),
+                html.Img(src='/assets/media/calendar.png'),
+                html.P(f"{workout["Date"]}")
+            ]
+        )
+    ]
+
+    # return html.Div(
+    #     className="workout-details-row",
+    #     children=[
+    #         html.Div(
+    #             className="workout-details-card",
+    #             children=[
+    #                 html.Img(src="/assets/media/temperature.png"),
+    #                 html.P("Temperature (C)"),
+    #                 html.P(f"{workout["Temperature (C)"]}")
+    #             ]
+    #         ),
+    #         html.Div(
+    #             className="workout-details-card",
+    #             children=[
+    #                 html.Img(src="/assets/media/wind.png"),
+    #                 html.P("Wind Speed (km/h)"),
+    #                 html.P(f"{workout["Wind Speed (km/h)"]}")
+    #             ]
+    #         ),
+    #         html.Div(
+    #             className="workout-details-card",
+    #             children=[
+    #                 html.Img(src="/assets/media/humidity.png"),
+    #                 html.P("Humidity (%)"),
+    #                 html.P(f"{workout["Humidity (%)"]}")
+    #             ]
+    #         )
+    #     ]
+    # )
+    # return html.Div([
+    #     html.H3(f"Workout Details (ID: {workout['Workout ID']})"),
+    #     html.P(f"Date: {workout['Date']}"),
+    #     html.P(f"Distance: {workout['Distance (km)']} km"),
+    #     html.P(f"Duration: {workout['Duration (min)']} min"),
+    #     html.P(f"Calories Burned: {workout['Calories (kcal)']} kcal"),
+    # ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)

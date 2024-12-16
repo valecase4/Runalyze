@@ -113,12 +113,14 @@ def average_pace_workouts(df):
         x=workout_ids,
         y=average_paces,
         markers=True,
+        title="Average Pace (min/km) for Workouts with a Duration Close to Your Goal"
     )
 
     tickvals = [i for i in range(180,420,30)]
     ticktext = [seconds_to_minutes(i) for i in tickvals]
 
     fig.update_layout(
+        title=dict(font=dict(size=20, color="white"), x=0.5),
         xaxis=dict(
             title="Workout ID",
             title_font=dict(size=16, color="white"),
@@ -149,7 +151,7 @@ def average_pace_workouts(df):
     fig.add_annotation(
         x=workout_ids[len(workout_ids) // 2],
         y=235,
-        text="Target: 04:00 min/km",
+        text="Goal: 04:00 min/km",
         showarrow=False,
         font=dict(color="#00ff2a", size=14),
         align="center",
