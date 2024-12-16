@@ -101,3 +101,46 @@ def workout_distribution_by_distance(df):
     )
 
     return fig
+
+def average_pace_workouts(df):
+    from utils import convert_pace_to_seconds, seconds_to_minutes
+
+    new_df = convert_pace_to_seconds(df)
+    workout_ids = new_df["Workout ID"]
+    average_paces = new_df["Average Pace (sec/km)"]
+
+    fig = px.line(
+        x=workout_ids,
+        y=average_paces,
+        markers=True,
+    )
+
+    tickvals = [i for i in range(180,420,30)]
+    ticktext = [seconds_to_minutes(i) for i in tickvals]
+
+    fig.update_layout(
+        yaxis=dict(
+            tickvals = tickvals,
+            ticktext = ticktext
+        )
+    )
+
+    fig.add_shape(
+        type='line',
+        x0=min(workout_ids),
+        x1=max(workout_ids),
+        y0=240,
+        y1=240,
+        line=dict(color="green", width=2)
+    )
+
+    fig.add_annotation(
+        x=workout_ids[len(workout_ids) // 2],
+        y=235,
+        text="Target: 04:00 min/km",
+        showarrow=False,
+        font=dict(color="green", size=14),
+        align="center",
+    )
+
+    return fig

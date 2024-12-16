@@ -197,3 +197,27 @@ def count_workouts_by_distance_category(df):
     category_counts = df['Category'].value_counts().sort_index()
 
     return dict(sorted(category_counts.to_dict().items(), key=lambda x: x[1]))
+
+def convert_pace_to_seconds(df, pace_column: str='Average Pace (min/km)'):
+    def mmss_to_seconds(pace):
+        try:
+            minutes, seconds = map(int, pace.split(":"))
+            return minutes * 60 + seconds
+        except (ValueError, AttributeError):
+            return None
+        
+    df["Average Pace (sec/km)"] = df[pace_column].apply(mmss_to_seconds)
+    df["Duration (sec)"] = df["Duration (min)"].apply(mmss_to_seconds)
+
+    df = df[(df["Duration (sec)"] >= 1190) & (df["Duration (sec)"] <= 1210)]
+    return df
+
+
+def seconds_to_minutes(seconds):
+    try:
+        minutes = seconds // 60
+        remaining_seconds = seconds % 60
+        return f"{minutes:02}:{remaining_seconds:02}"
+    except Exception as e:
+        print(f"Error converting seconds to minutes: {e}")
+        return None
