@@ -101,7 +101,7 @@ app.layout = html.Div([
     html.Div(
         id="section3",
         children=[
-            dcc.Graph(figure=average_pace_workouts(df))
+            dcc.Graph(figure=average_pace_workouts(df), style={"width": "100%"})
         ]
     )
     # html.Div(

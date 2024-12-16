@@ -119,10 +119,22 @@ def average_pace_workouts(df):
     ticktext = [seconds_to_minutes(i) for i in tickvals]
 
     fig.update_layout(
+        xaxis=dict(
+            title="Workout ID",
+            title_font=dict(size=16, color="white"),
+            tickfont=dict(size=12, color="white"),
+            gridcolor="rgba(50, 50, 50, 0.6)"
+        ),
         yaxis=dict(
+            title="Average Pace (min/km)",
+            title_font=dict(size=16, color="white"),
             tickvals = tickvals,
-            ticktext = ticktext
-        )
+            ticktext = ticktext,
+            tickfont=dict(size=12, color="white"),
+            gridcolor="rgba(50, 50, 50, 0.6)"
+        ),
+        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot background
+        paper_bgcolor="rgba(20, 20, 30, 1)",  # Dark blue-ish background,
     )
 
     fig.add_shape(
@@ -131,7 +143,7 @@ def average_pace_workouts(df):
         x1=max(workout_ids),
         y0=240,
         y1=240,
-        line=dict(color="green", width=2)
+        line=dict(color="#00ff2a", width=2)
     )
 
     fig.add_annotation(
@@ -139,7 +151,7 @@ def average_pace_workouts(df):
         y=235,
         text="Target: 04:00 min/km",
         showarrow=False,
-        font=dict(color="green", size=14),
+        font=dict(color="#00ff2a", size=14),
         align="center",
     )
 
