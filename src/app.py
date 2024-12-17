@@ -3,37 +3,44 @@ import plotly.express as px
 import pandas as pd
 from utils import *
 from utilsDir.section1.main import SectionOne
+from utilsDir.section1.strategies import FullDatasetStrategy, LastYearStrategy, LastMonthStrategy
 from graphs import *
 import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
 
-section_one = SectionOne(df)
+strategy_map = {
+    "full": FullDatasetStrategy(),
+    "last_year": LastYearStrategy(),
+    "last_month": LastMonthStrategy(),
+}
+
+initial_section_one = SectionOne(df, FullDatasetStrategy())
 
 app = Dash(__name__)
 
 # Try Dataframe
 
-dataFrame = pd.DataFrame({
-    "Workout ID": [1, 2, 3],
-    "Date": ["2024-12-01", "2024-12-02", "2024-12-03"],
-    "Distance (km)": [5.0, 7.2, 10.0],
-    "Duration (min)": [25, 35, 50],
-    "Calories (kcal)": [300, 400, 600],
-})
+# dataFrame = pd.DataFrame({
+#     "Workout ID": [1, 2, 3],
+#     "Date": ["2024-12-01", "2024-12-02", "2024-12-03"],
+#     "Distance (km)": [5.0, 7.2, 10.0],
+#     "Duration (min)": [25, 35, 50],
+#     "Calories (kcal)": [300, 400, 600],
+# })
 
-######### TRYINH DASH-AS-GRID COMPONENT LIBRARY
+######### TRYING DASH-AS-GRID COMPONENT LIBRARY
 
-grid = dag.AgGrid(
-    id='get-started',
-    rowData=df.to_dict("records"),
-    columnDefs=[
-        {"field": "Date", "sortable": True, "filter": True},
-        {"field": "Average Pace (min/km)", "sortable": True, "filter": True},
-        {"field": "Distance (km)", "sortable": True, "filter": True}
-    ],
-    className="ag-theme-alpine-dark"
-)
+# grid = dag.AgGrid(
+#     id='get-started',
+#     rowData=df.to_dict("records"),
+#     columnDefs=[
+#         {"field": "Date", "sortable": True, "filter": True},
+#         {"field": "Average Pace (min/km)", "sortable": True, "filter": True},
+#         {"field": "Distance (km)", "sortable": True, "filter": True}
+#     ],
+#     className="ag-theme-alpine-dark"
+# )
 
 app.layout = html.Div([
     html.Script(src='assets/script.js'),
@@ -53,17 +60,17 @@ app.layout = html.Div([
                 html.Div([
                     html.Img(src='/assets/media/running_colored.png'),
                     html.H3("Total Distance (km):"),
-                    html.Div(className='display-total', id='total-km', children=f"{section_one.get_total_km()} km")
+                    html.Div(className='display-total', id='total-km', children=f"{initial_section_one.get_total_km()} km")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/flame_colored.png'),
                     html.H3("Total Calories Burned:"),
-                    html.Div(className='display-total', id='total-calories', children=f"{section_one.get_total_calories()} kcal")
+                    html.Div(className='display-total', id='total-calories', children=f"{initial_section_one.get_total_calories()} kcal")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/calendar_colored.png'),
                     html.H3("Workouts Performed:"),
-                    html.Div(className='display-total', id='total-workouts', children=section_one.get_total_workouts())
+                    html.Div(className='display-total', id='total-workouts', children=initial_section_one.get_total_workouts())
                 ], className='card')
             ])
         ]
@@ -309,6 +316,7 @@ app.layout = html.Div([
     Input('select-overview', component_property='value')
 )
 def update_overview(value):
+    print(value)
     if value != 'General':
         my_value = value.split(":")[1].strip()
         
@@ -340,13 +348,13 @@ def update_overview(value):
         #         f"{total_workouts_last_year(df, last_year)}",
         #         f"Overview of Your Last Year: {last_year}"
         #     ]
-    else:
-        return [
-            section_one.get_total_km(), 
-            section_one.get_total_calories(),
-            section_one.get_total_workouts(),
-            "Overview"
-        ]
+    # else:
+    #     return [
+    #         section_one.get_total_km(), 
+    #         section_one.get_total_calories(),
+    #         section_one.get_total_workouts(),
+    #         "Overview"
+    #     ]
 
 @app.callback(
     [
