@@ -1,4 +1,4 @@
-from utilsDir.section1.strategies import FullDatasetStrategy, LastYearStrategy, LastMonthStrategy
+import pandas as pd
 
 class SectionOne:
     def __init__(self, df, strategy):
@@ -31,3 +31,14 @@ class SectionOne:
         """Calculate total unique workouts."""
         data = self.get_filtered_data()
         return data.drop_duplicates(subset='Date', keep='first').shape[0]
+    
+    def get_last_year(self):
+        last_year = pd.to_datetime(self.df['Date']).dt.year.max()
+        return last_year
+    
+    def get_last_month(self):
+        from ..utils import get_month_name
+
+        last_month = pd.to_datetime(self.df["Date"]).max()
+        return get_month_name(last_month.month)
+    

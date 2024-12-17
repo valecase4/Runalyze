@@ -8,14 +8,7 @@ from graphs import *
 import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
-
-strategy_map = {
-    "full": FullDatasetStrategy(),
-    "last_year": LastYearStrategy(),
-    "last_month": LastMonthStrategy(),
-}
-
-initial_section_one = SectionOne(df, FullDatasetStrategy())
+section_one = SectionOne(df, FullDatasetStrategy())
 
 app = Dash(__name__)
 
@@ -48,29 +41,30 @@ app.layout = html.Div([
         id="section1",
         children=[
             html.H1("Data Overview", id='title-section-1'),
-            dcc.Dropdown([
-                'General', 
-                f'Last Month: {get_last_month(df)}',
-                f'Last Year: {get_last_year(df)}'
-                ], 
-                id='select-overview',
-                value='General'
+            dcc.Dropdown(
+                    options=[
+                        {'label': 'General', 'value': 'general'},
+                        {'label': 'Last Year', 'value': 'last_year'},
+                        {'label': 'Last Month', 'value': 'last_month'},
+                    ],
+                    id='select-overview',
+                    value='general'
                 ),
             html.Div(id='stats-div', children=[
                 html.Div([
                     html.Img(src='/assets/media/running_colored.png'),
                     html.H3("Total Distance (km):"),
-                    html.Div(className='display-total', id='total-km', children=f"{initial_section_one.get_total_km()} km")
+                    html.Div(className='display-total', id='total-km', children=f"{section_one.get_total_km()} km")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/flame_colored.png'),
                     html.H3("Total Calories Burned:"),
-                    html.Div(className='display-total', id='total-calories', children=f"{initial_section_one.get_total_calories()} kcal")
+                    html.Div(className='display-total', id='total-calories', children=f"{section_one.get_total_calories()} kcal")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/calendar_colored.png'),
                     html.H3("Workouts Performed:"),
-                    html.Div(className='display-total', id='total-workouts', children=initial_section_one.get_total_workouts())
+                    html.Div(className='display-total', id='total-workouts', children=section_one.get_total_workouts())
                 ], className='card')
             ])
         ]
@@ -202,8 +196,8 @@ app.layout = html.Div([
                             children=[
                                 dcc.Dropdown(
                                     id="workout-selector",
-                                    options=[{"label": f"ID {row['Workout ID']} - {row['Date'].strftime("%y/%m/%d")}",
-                                            "value": row["Workout ID"]} for _, row in df.iterrows()],
+                                    # options=[{"label": f"ID {row['Workout ID']} - {row['Date'].strftime("%y/%m/%d")}",
+                                    #         "value": row["Workout ID"]} for _, row in df.iterrows()],
                                     placeholder="Select a workout"
                                 )
                             ]
@@ -309,148 +303,140 @@ app.layout = html.Div([
 # Manage dropdown menu behavior
 
 @app.callback(
-    Output('total-km', component_property='children'),
+    [Output('total-km', component_property='children'),
     Output('total-calories', component_property='children'),
     Output('total-workouts', component_property='children'),
-    Output('title-section-1', component_property='children'),
-    Input('select-overview', component_property='value')
+    Output('title-section-1', component_property='children')
+    ],
+    [Input('select-overview', component_property='value')]
 )
 def update_overview(value):
-    print(value)
-    if value != 'General':
-        my_value = value.split(":")[1].strip()
-        
-        if len(my_value.split(" ")) == 2:
-            last_month, last_year = get_month_index_by_name(my_value.split(" ")[0]), int(my_value.split(" ")[1])
-            return [
-                f"{total_km_last_month(df, last_month, last_year)}",
-                f"{total_calories_last_month(df, last_month, last_year)}",
-                f"{total_workouts_last_month(df, last_month, last_year)}",
-                f"Overview of Your Last Month: {last_month, last_year}"
-            ]
-        else:
-            last_year = int(my_value)
-            return [
-                f"{total_km_last_year(df, last_year)}", 
-                f"{total_calories_last_year(df, last_year)}",
-                f"{total_workouts_last_year(df, last_year)}",
-                f"Overview of Your Last Year: {last_year}"
-            ]
-        
-        # if len(value.split(" ")) == 2: # last month (e.g. Dec 2024)
-        #     print(value)
-        # else:
-        #     last_year = int(str(value.split(":")[-1]).strip())
-        #     print(last_year)
-        #     return [
-        #         f"{total_km_last_year(df, last_year)}", 
-        #         f"{total_calories_last_year(df, last_year)}",
-        #         f"{total_workouts_last_year(df, last_year)}",
-        #         f"Overview of Your Last Year: {last_year}"
-        #     ]
-    # else:
-    #     return [
-    #         section_one.get_total_km(), 
-    #         section_one.get_total_calories(),
-    #         section_one.get_total_workouts(),
-    #         "Overview"
-    #     ]
+    strategy_map = {
+        "full": FullDatasetStrategy(),
+        "last_year": LastYearStrategy(),
+        "last_month": LastMonthStrategy(),
+    }
 
-@app.callback(
-    [
-        Output(component_id='selected-workout-id', component_property="children"),
-        Output(component_id='selected-workout-date', component_property='children'),
-        Output(component_id='selected-workout-distance', component_property="children"),
-        Output(component_id='selected-workout-duration', component_property="children"),
-        Output(component_id='selected-workout-calories', component_property="children"),
-        Output(component_id='selected-workout-averagepace', component_property='children'),
-        Output(component_id='selected-workout-averagespeed', component_property="children"),
-        Output(component_id='selected-workout-maxspeed', component_property="children"),
-        Output(component_id='selected-workout-elevationgain', component_property="children"),
-        Output(component_id='selected-workout-elevationloss', component_property="children"),
-        Output(component_id="selected-workout-startime", component_property="children")
-    ],
-    [Input(component_id="workout-selector", component_property="value")]
-)
-def update_workout_details(selected_id):
-    # if selected_id is None:
-    #     return "Please select a workout to see details."
-    
-    workout = df[df["Workout ID"] == selected_id].iloc[0]
-    print(workout["Elevation Gain (m)"])
-    print(type(workout["Elevation Gain (m)"]))
+    selected_strategy = strategy_map.get(value, FullDatasetStrategy())
+    section_one = SectionOne(df, selected_strategy)
+
+    total_km = section_one.get_total_km()
+    total_calories = section_one.get_total_calories()
+    total_workouts = section_one.get_total_workouts()
+
+    output_title = ""
+
+    if value == "general":
+        output_title = "Overview"
+    elif value == "last_year":
+        output_title = f"Overview: {section_one.get_last_year()}"
+    else:
+        output_title = f"Overview: {section_one.get_last_month()} {section_one.get_last_year()}"
+
+    # print(value, selected_strategy)
 
     return [
-        html.Div(
-            children=[
-                html.H5("Workout ID"),
-                html.P(f"{workout["Workout ID"]}")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Date"),
-                html.P(f"{workout["Date"].strftime("%y-%m-%d")}")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Distance"),
-                html.P(f"{workout["Distance (km)"]} km")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Duration"),
-                html.P(f"{workout["Duration (min)"]}")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Calories"),
-                html.P(f"{workout["Calories (kcal)"]}kcal")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Average Pace"),
-                html.P(f"{workout["Average Pace (min/km)"]}min/km")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Average Speed"),
-                html.P(f"{workout["Average Speed (km/h)"]}km/h")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Max Speed"),
-                html.P(f"{workout["Max Speed (km/h)"]}km/h")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Elevation Gain"),
-                html.Img(src='/assets/media/elevation-gain.png'),
-                html.P(f"{workout["Elevation Gain (m)"]}m" if f"{workout["Elevation Gain (m)"]}" != "nan" else "-")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Elevation Loss"),
-                html.Img(src='/assets/media/elevation-loss.png'),
-                html.P(f"{workout["Elevation Loss (m)"]}m" if f"{workout["Elevation Loss (m)"]}" != "nan" else "-")
-            ]
-        ),
-        html.Div(
-            children=[
-                html.H5("Start Time"),
-                html.Img(src='/assets/media/watch.png'),
-                html.P(f"{workout["Start Time"]}")
-            ]
-        )
+        f"{total_km}",
+        f"{total_calories}",
+        f"{total_workouts}",
+        f"{output_title}"
     ]
+
+# @app.callback(
+#     [
+#         Output(component_id='selected-workout-id', component_property="children"),
+#         Output(component_id='selected-workout-date', component_property='children'),
+#         Output(component_id='selected-workout-distance', component_property="children"),
+#         Output(component_id='selected-workout-duration', component_property="children"),
+#         Output(component_id='selected-workout-calories', component_property="children"),
+#         Output(component_id='selected-workout-averagepace', component_property='children'),
+#         Output(component_id='selected-workout-averagespeed', component_property="children"),
+#         Output(component_id='selected-workout-maxspeed', component_property="children"),
+#         Output(component_id='selected-workout-elevationgain', component_property="children"),
+#         Output(component_id='selected-workout-elevationloss', component_property="children"),
+#         Output(component_id="selected-workout-startime", component_property="children")
+#     ],
+#     [Input(component_id="workout-selector", component_property="value")]
+# )
+# def update_workout_details(selected_id):
+#     # if selected_id is None:
+#     #     return "Please select a workout to see details."
+    
+#     # workout = df[df["Workout ID"] == selected_id].iloc[0]
+#     print(workout["Elevation Gain (m)"])
+#     print(type(workout["Elevation Gain (m)"]))
+
+#     return [
+#         html.Div(
+#             children=[
+#                 html.H5("Workout ID"),
+#                 html.P(f"{workout["Workout ID"]}")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Date"),
+#                 html.P(f"{workout["Date"].strftime("%y-%m-%d")}")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Distance"),
+#                 html.P(f"{workout["Distance (km)"]} km")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Duration"),
+#                 html.P(f"{workout["Duration (min)"]}")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Calories"),
+#                 html.P(f"{workout["Calories (kcal)"]}kcal")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Average Pace"),
+#                 html.P(f"{workout["Average Pace (min/km)"]}min/km")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Average Speed"),
+#                 html.P(f"{workout["Average Speed (km/h)"]}km/h")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Max Speed"),
+#                 html.P(f"{workout["Max Speed (km/h)"]}km/h")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Elevation Gain"),
+#                 html.Img(src='/assets/media/elevation-gain.png'),
+#                 html.P(f"{workout["Elevation Gain (m)"]}m" if f"{workout["Elevation Gain (m)"]}" != "nan" else "-")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Elevation Loss"),
+#                 html.Img(src='/assets/media/elevation-loss.png'),
+#                 html.P(f"{workout["Elevation Loss (m)"]}m" if f"{workout["Elevation Loss (m)"]}" != "nan" else "-")
+#             ]
+#         ),
+#         html.Div(
+#             children=[
+#                 html.H5("Start Time"),
+#                 html.Img(src='/assets/media/watch.png'),
+#                 html.P(f"{workout["Start Time"]}")
+#             ]
+#         )
+#     ]
 
     # return html.Div(
     #     className="workout-details-row",
