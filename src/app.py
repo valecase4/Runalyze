@@ -1,10 +1,11 @@
-from dash import Dash, html, dcc, callback, Output, Input
+from dash import Dash, html, dcc, callback, Output, Input, State
 import plotly.express as px
 import pandas as pd
 from utils import *
 from utilsDir.section1.main import SectionOne
 from utilsDir.section1.strategies import FullDatasetStrategy, LastYearStrategy, LastMonthStrategy
 from graphs import *
+from dash.dash_table import DataTable
 
 df = pd.read_csv("../data/raw/training_data.csv")
 
@@ -13,7 +14,6 @@ section_one = SectionOne(df, FullDatasetStrategy())
 app = Dash(__name__)
 
 app.layout = html.Div([
-    html.Script(src='assets/script.js'),
     html.Div(
         id="section1",
         children=[
@@ -51,8 +51,57 @@ app.layout = html.Div([
                             html.H3("Workouts Performed:", className="card__title"),
                             html.Div(className='card__value', id='total-workouts', children=section_one.get_total_workouts())
                         ], 
-                        className='stats-card')
+                        className='stats-card hoverable',
+                        id='card-total-workouts'
+                        )
                     ])
+        ]
+    ),
+    html.Div(
+        id="section-1__overlay",
+        className="overlay hidden",
+        children=[
+            html.Div(
+                id='section-1__data-container',
+                children=[
+                    html.Button(
+                        "General",
+                        id="section-1__general-btn",
+                        className='filter-btn'
+                    ),
+                    html.Button(
+                        "Last Year",
+                        id="section-1__last-year-btn",
+                        className='filter-btn'
+                    ),
+                    html.Button(
+                        "Last Month",
+                        id="section-1__last-month-btn",
+                        className='filter-btn'
+                    ),
+                    DataTable(
+                        id="workout-dataset-table",
+                        columns=[{"name": i, "id": i} for i in df[['Workout ID', 'Date', 'Distance (km)', 'Calories (kcal)', 'Average Pace (min/km)']].columns],
+                        data=df.to_dict('records'),
+                        style_header={
+                            'backgroundColor': '#1f2c34',
+                            'color': 'white',
+                            'fontWeight': 'bold',
+                            'padding': '10px',
+                        },
+                        style_cell={
+                            'backgroundColor': '#2c2f33',
+                            'color': 'white',
+                            'textAlign': 'center',
+                            'padding': '10px'
+                        }
+                    ),
+                    html.Button(
+                        children="x",
+                        id="section-1__close-overlay-btn"
+                    )
+                ]
+            )
         ]
     ),
     html.Div(
@@ -285,6 +334,48 @@ app.layout = html.Div([
     #     ]
     # )
 ])
+
+@app.callback(
+    Output('workout-dataset-table', 'data'),
+    Input('section-1__last-year-btn', 'n_clicks'),
+)
+def update_tables(n_clicks):
+    if n_clicks and n_clicks > 0:
+        print("Last Year Button Clicked")
+        return df[pd.to_datetime(df['Date']).dt.year == 2024].to_dict('records')
+    return df.to_dict("records")
+
+
+@app.callback(
+    Output(component_id='section-1__overlay', component_property="className", allow_duplicate=True),
+    Input(component_id="section-1__close-overlay-btn", component_property="n_clicks"),
+    prevent_initial_call=True
+)
+def close_overlay(n_clicks):
+    if n_clicks and n_clicks > 0:
+        return "overlay hidden"
+    return "overlay"
+
+@app.callback(
+    Output(component_id='section-1__overlay', component_property="className", allow_duplicate=True),
+    Input(component_id='card-total-workouts', component_property='n_clicks'),
+    State(component_id='section-1__overlay', component_property='className'),
+    prevent_initial_call=True
+)
+def toggle_overlay(n_clicks, current_style):
+    if n_clicks and n_clicks > 0:
+        return "overlay"
+    return "overlay hidden"
+
+# @app.callback(
+#     Output(component_id='section-1__overlay', component_property="className", allow_duplicate=True),
+#     Input(component_id='section-1__overlay', component_property='n_clicks'),
+#     prevent_initial_call=True
+# )
+# def close_overlay(n_clicks):
+#     if n_clicks and n_clicks > 0:
+#         return "overlay hidden"
+#     return "overlay"
 
 @app.callback(
     [Output('total-km', component_property='children'),
