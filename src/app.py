@@ -199,56 +199,83 @@ app.layout = html.Div([
                             ]
                             ),
                             html.Div(
-                                id="workout-details",
+                                id='workout-details',
                                 children=[
                                     html.Div(
-                                        id="main-details",
+                                        id='main-stats-div',
                                         children=[
-                                            html.H5("Main Stats"),
+                                            html.H3("Main Stats"),
                                             html.Div(
-                                                className='row',
                                                 children=[
                                                     html.Div(
-                                                        className="workout-details-card",
-                                                        id='workout-id'
+                                                        className="row-details",
+                                                        children=[
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-id"
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id='selected-workout-date'
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id='selected-workout-distance'
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id='selected-workout-duration'
+                                                            )
+                                                        ]
                                                     ),
                                                     html.Div(
-                                                        className="workout-details-card",
-                                                        id='workout-date'
+                                                        className='row-details',
+                                                        children=[
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-calories"
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-averagepace"
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-averagespeed"
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-maxspeed"
+                                                            )
+                                                        ]
                                                     )
                                                 ]
-                                            ),
+                                            )
+                                        ]
+                                    ),
+                                    html.Div(
+                                        id="other-stats-div",
+                                        children=[
+                                            html.H3("Other Stats"),
                                             html.Div(
-                                                className="row",
                                                 children=[
                                                     html.Div(
-                                                        className="workout-details-card"
+                                                        className="row-details",
+                                                        children=[
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id='selected-workout-elevationgain'
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-elevationloss"
+                                                            ),
+                                                            html.Div(
+                                                                className="details-card",
+                                                                id="selected-workout-startime"
+                                                            )
+                                                        ]
                                                     ),
-                                                    html.Div(
-                                                        className="workout-details-card"
-                                                    )
-                                                ]
-                                            ),
-                                            html.Div(
-                                                className="row",
-                                                children=[
-                                                    html.Div(
-                                                        className="workout-details-card"
-                                                    ),
-                                                    html.Div(
-                                                        className="workout-details-card"
-                                                    )
-                                                ]
-                                            ),
-                                            html.Div(
-                                                className="row",
-                                                children=[
-                                                    html.Div(
-                                                        className="workout-details-card"
-                                                    ),
-                                                    html.Div(
-                                                        className="workout-details-card"
-                                                    )
                                                 ]
                                             )
                                         ]
@@ -320,8 +347,17 @@ def update_overview(value):
 
 @app.callback(
     [
-        Output(component_id='workout-id', component_property="children"),
-        Output(component_id='workout-date', component_property='children')
+        Output(component_id='selected-workout-id', component_property="children"),
+        Output(component_id='selected-workout-date', component_property='children'),
+        Output(component_id='selected-workout-distance', component_property="children"),
+        Output(component_id='selected-workout-duration', component_property="children"),
+        Output(component_id='selected-workout-calories', component_property="children"),
+        Output(component_id='selected-workout-averagepace', component_property='children'),
+        Output(component_id='selected-workout-averagespeed', component_property="children"),
+        Output(component_id='selected-workout-maxspeed', component_property="children"),
+        Output(component_id='selected-workout-elevationgain', component_property="children"),
+        Output(component_id='selected-workout-elevationloss', component_property="children"),
+        Output(component_id="selected-workout-startime", component_property="children")
     ],
     [Input(component_id="workout-selector", component_property="value")]
 )
@@ -330,20 +366,77 @@ def update_workout_details(selected_id):
     #     return "Please select a workout to see details."
     
     workout = df[df["Workout ID"] == selected_id].iloc[0]
+    print(workout["Elevation Gain (m)"])
+    print(type(workout["Elevation Gain (m)"]))
 
     return [
         html.Div(
             children=[
-                html.P("Workout ID"),
-                html.Img(src='/assets/media/details.png'),
+                html.H5("Workout ID"),
                 html.P(f"{workout["Workout ID"]}")
             ]
         ),
         html.Div(
             children=[
-                html.P("Date"),
-                html.Img(src='/assets/media/calendar.png'),
-                html.P(f"{workout["Date"]}")
+                html.H5("Date"),
+                html.P(f"{workout["Date"].strftime("%y-%m-%d")}")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Distance"),
+                html.P(f"{workout["Distance (km)"]} km")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Duration"),
+                html.P(f"{workout["Duration (min)"]}")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Calories"),
+                html.P(f"{workout["Calories (kcal)"]}kcal")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Average Pace"),
+                html.P(f"{workout["Average Pace (min/km)"]}min/km")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Average Speed"),
+                html.P(f"{workout["Average Speed (km/h)"]}km/h")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.H5("Max Speed"),
+                html.P(f"{workout["Max Speed (km/h)"]}km/h")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.P("Elevation Gain"),
+                html.Img(src='/assets/media/elevation-gain.png'),
+                html.P(f"{workout["Elevation Gain (m)"]}m" if f"{workout["Elevation Gain (m)"]}" != "nan" else "-")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.P("Elevation Loss"),
+                html.Img(src='/assets/media/elevation-loss.png'),
+                html.P(f"{workout["Elevation Loss (m)"]}m" if f"{workout["Elevation Loss (m)"]}" != "nan" else "-")
+            ]
+        ),
+        html.Div(
+            children=[
+                html.P("Start Time"),
+                html.Img(src='/assets/media/watch.png'),
+                html.P(f"{workout["Start Time"]}")
             ]
         )
     ]
