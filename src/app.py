@@ -5,68 +5,54 @@ from utils import *
 from utilsDir.section1.main import SectionOne
 from utilsDir.section1.strategies import FullDatasetStrategy, LastYearStrategy, LastMonthStrategy
 from graphs import *
-import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
+
 section_one = SectionOne(df, FullDatasetStrategy())
 
 app = Dash(__name__)
-
-# Try Dataframe
-
-# dataFrame = pd.DataFrame({
-#     "Workout ID": [1, 2, 3],
-#     "Date": ["2024-12-01", "2024-12-02", "2024-12-03"],
-#     "Distance (km)": [5.0, 7.2, 10.0],
-#     "Duration (min)": [25, 35, 50],
-#     "Calories (kcal)": [300, 400, 600],
-# })
-
-######### TRYING DASH-AS-GRID COMPONENT LIBRARY
-
-# grid = dag.AgGrid(
-#     id='get-started',
-#     rowData=df.to_dict("records"),
-#     columnDefs=[
-#         {"field": "Date", "sortable": True, "filter": True},
-#         {"field": "Average Pace (min/km)", "sortable": True, "filter": True},
-#         {"field": "Distance (km)", "sortable": True, "filter": True}
-#     ],
-#     className="ag-theme-alpine-dark"
-# )
 
 app.layout = html.Div([
     html.Script(src='assets/script.js'),
     html.Div(
         id="section1",
         children=[
-            html.H1("Data Overview", id='title-section-1'),
+            html.H1("Data Overview", id='section-1__title', className='section-title'),
             dcc.Dropdown(
                     options=[
                         {'label': 'General', 'value': 'general'},
                         {'label': 'Last Year', 'value': 'last_year'},
                         {'label': 'Last Month', 'value': 'last_month'},
                     ],
-                    id='select-overview',
-                    value='general'
+                    id='section-1__dropdown',
+                    value='general',
+                    className="overview-dropdown"
                 ),
-            html.Div(id='stats-div', children=[
-                html.Div([
-                    html.Img(src='/assets/media/running_colored.png'),
-                    html.H3("Total Distance (km):"),
-                    html.Div(className='display-total', id='total-km', children=f"{section_one.get_total_km()} km")
-                ], className='card'),
-                html.Div([
-                    html.Img(src='/assets/media/flame_colored.png'),
-                    html.H3("Total Calories Burned:"),
-                    html.Div(className='display-total', id='total-calories', children=f"{section_one.get_total_calories()} kcal")
-                ], className='card'),
-                html.Div([
-                    html.Img(src='/assets/media/calendar_colored.png'),
-                    html.H3("Workouts Performed:"),
-                    html.Div(className='display-total', id='total-workouts', children=section_one.get_total_workouts())
-                ], className='card')
-            ])
+            html.Div(
+                id='section-1__stats', 
+                children=[
+                    html.Div(
+                        children=[
+                            html.Img(src='/assets/media/running_colored.png', className="card__icon"),
+                            html.H3("Total Distance (km):", className="card__title"),
+                            html.Div(className='card__value', id='total-km', children=f"{section_one.get_total_km()} km")
+                        ], 
+                        className='stats-card'
+                        ),
+                        html.Div(
+                            children=[
+                                html.Img(src='/assets/media/flame_colored.png', className="card__icon"),
+                                html.H3("Total Calories Burned:", className="card__title"),
+                                html.Div(className='card__value', id='total-calories', children=f"{section_one.get_total_calories()} kcal")
+                            ], 
+                            className='stats-card'),
+                        html.Div([
+                            html.Img(src='/assets/media/calendar_colored.png', className="card__icon"),
+                            html.H3("Workouts Performed:", className="card__title"),
+                            html.Div(className='card__value', id='total-workouts', children=section_one.get_total_workouts())
+                        ], 
+                        className='stats-card')
+                    ])
         ]
     ),
     html.Div(
@@ -300,15 +286,13 @@ app.layout = html.Div([
     # )
 ])
 
-# Manage dropdown menu behavior
-
 @app.callback(
     [Output('total-km', component_property='children'),
     Output('total-calories', component_property='children'),
     Output('total-workouts', component_property='children'),
-    Output('title-section-1', component_property='children')
+    Output('section-1__title', component_property='children')
     ],
-    [Input('select-overview', component_property='value')]
+    [Input('section-1__dropdown', component_property='value')]
 )
 def update_overview(value):
     strategy_map = {
