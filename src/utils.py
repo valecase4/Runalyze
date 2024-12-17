@@ -1,15 +1,15 @@
 import pandas as pd
 
-def total_km(df):
-    return round(df['Distance (km)'].sum(), 2)
+# def total_km(df):
+#     return round(df['Distance (km)'].sum(), 2)
 
-def total_calories(df):
-    calories = df['Calories (kcal)'].sum()
-    formatted_value = f"{calories:,}".replace(",", ".")
-    return formatted_value
+# def total_calories(df):
+#     calories = df['Calories (kcal)'].sum()
+#     formatted_value = f"{calories:,}".replace(",", ".")
+#     return formatted_value
 
-def total_workouts(df):
-    return df.drop_duplicates(subset='Date', keep='first').shape[0]
+# def total_workouts(df):
+#     return df.drop_duplicates(subset='Date', keep='first').shape[0]
 
 def get_month_index_by_name(month_name):
     month_values = {

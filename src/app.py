@@ -2,10 +2,13 @@ from dash import Dash, html, dcc, callback, Output, Input
 import plotly.express as px
 import pandas as pd
 from utils import *
+from utilsDir.section1.main import SectionOne
 from graphs import *
 import dash_ag_grid as dag
 
 df = pd.read_csv("../data/raw/training_data.csv")
+
+section_one = SectionOne(df)
 
 app = Dash(__name__)
 
@@ -50,17 +53,17 @@ app.layout = html.Div([
                 html.Div([
                     html.Img(src='/assets/media/running_colored.png'),
                     html.H3("Total Distance (km):"),
-                    html.Div(className='display-total', id='total-km', children=f"{total_km(df)} km")
+                    html.Div(className='display-total', id='total-km', children=f"{section_one.get_total_km()} km")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/flame_colored.png'),
                     html.H3("Total Calories Burned:"),
-                    html.Div(className='display-total', id='total-calories', children=f"{total_calories(df)} kcal")
+                    html.Div(className='display-total', id='total-calories', children=f"{section_one.get_total_calories()} kcal")
                 ], className='card'),
                 html.Div([
                     html.Img(src='/assets/media/calendar_colored.png'),
                     html.H3("Workouts Performed:"),
-                    html.Div(className='display-total', id='total-workouts', children=total_workouts(df))
+                    html.Div(className='display-total', id='total-workouts', children=section_one.get_total_workouts())
                 ], className='card')
             ])
         ]
@@ -339,9 +342,9 @@ def update_overview(value):
         #     ]
     else:
         return [
-            total_km(df), 
-            total_calories(df),
-            total_workouts(df),
+            section_one.get_total_km(), 
+            section_one.get_total_calories(),
+            section_one.get_total_workouts(),
             "Overview"
         ]
 
@@ -420,21 +423,21 @@ def update_workout_details(selected_id):
         ),
         html.Div(
             children=[
-                html.P("Elevation Gain"),
+                html.H5("Elevation Gain"),
                 html.Img(src='/assets/media/elevation-gain.png'),
                 html.P(f"{workout["Elevation Gain (m)"]}m" if f"{workout["Elevation Gain (m)"]}" != "nan" else "-")
             ]
         ),
         html.Div(
             children=[
-                html.P("Elevation Loss"),
+                html.H5("Elevation Loss"),
                 html.Img(src='/assets/media/elevation-loss.png'),
                 html.P(f"{workout["Elevation Loss (m)"]}m" if f"{workout["Elevation Loss (m)"]}" != "nan" else "-")
             ]
         ),
         html.Div(
             children=[
-                html.P("Start Time"),
+                html.H5("Start Time"),
                 html.Img(src='/assets/media/watch.png'),
                 html.P(f"{workout["Start Time"]}")
             ]
