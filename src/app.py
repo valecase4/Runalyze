@@ -1,3 +1,4 @@
+import dash
 from dash import Dash, html, dcc, callback, Output, Input, State
 import plotly.express as px
 import pandas as pd
@@ -54,7 +55,14 @@ app.layout = html.Div([
                         className='stats-card hoverable',
                         id='card-total-workouts'
                         )
-                    ])
+            ]),
+            html.Button(
+                id='section-1__add-new-workout',
+                children=[
+                    "Add New"
+                ],
+                title='Add New Workout'
+            )
         ]
     ),
     html.Div(
@@ -66,17 +74,17 @@ app.layout = html.Div([
                 children=[
                     html.Button(
                         "General",
-                        id="section-1__general-btn",
+                        id="filter-data__general-btn",
                         className='filter-btn'
                     ),
                     html.Button(
                         "Last Year",
-                        id="section-1__last-year-btn",
+                        id="filter-data__last-year-btn",
                         className='filter-btn'
                     ),
                     html.Button(
                         "Last Month",
-                        id="section-1__last-month-btn",
+                        id="filter-data__last-month-btn",
                         className='filter-btn'
                     ),
                     DataTable(
@@ -95,12 +103,18 @@ app.layout = html.Div([
                             'textAlign': 'center',
                             'padding': '10px'
                         }
-                    ),
-                    html.Button(
-                        children="x",
-                        id="section-1__close-overlay-btn"
                     )
                 ]
+            ),
+            html.Div(
+                id='section-1__add-new-container',
+                children=[
+                    html.H3("Test: Add New Workout")
+                ]
+            ),
+            html.Button(
+                children="x",
+                id="section-1__close-overlay-btn"
             )
         ]
     ),
@@ -336,14 +350,38 @@ app.layout = html.Div([
 ])
 
 @app.callback(
-    Output('workout-dataset-table', 'data'),
-    Input('section-1__last-year-btn', 'n_clicks'),
+        [Output(component_id='section-1__add-new-container', component_property='className', allow_duplicate=True),
+         Output(component_id='section-1__data-container', component_property='className', allow_duplicate=True),
+         Output(component_id='section-1__overlay', component_property='className', allow_duplicate=True)],
+        Input(component_id='section-1__add-new-workout', component_property='n_clicks'),
+        prevent_initial_call=True
 )
-def update_tables(n_clicks):
+def open_new_workout_form(n_clicks):
     if n_clicks and n_clicks > 0:
-        print("Last Year Button Clicked")
+        return ["", "hidden", "overlay"]
+    return ["hidden", "hidden", "hidden"]
+
+@app.callback(
+    Output('workout-dataset-table', 'data'),
+    [Input('filter-data__general-btn', 'n_clicks'),
+     Input('filter-data__last-year-btn', 'n_clicks'),
+     Input('filter-data__last-month-btn', 'n_clicks')]
+)
+def update_tables(general_clicks, last_year_clicks, last_month_clicks):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        return df.to_dict('records')
+
+    button_id = ctx.triggered[0]['prop_id'].split(".")[0]
+
+    if button_id == 'filter-data__last-year-btn':
         return df[pd.to_datetime(df['Date']).dt.year == 2024].to_dict('records')
-    return df.to_dict("records")
+    
+    elif button_id == 'filter-data__last-month-btn':
+        return df[(pd.to_datetime(df['Date']).dt.month == 12) & (pd.to_datetime(df['Date']).dt.year == 2024)].to_dict('records')
+    
+    return df.to_dict('records')
 
 
 @app.callback(
@@ -357,15 +395,17 @@ def close_overlay(n_clicks):
     return "overlay"
 
 @app.callback(
-    Output(component_id='section-1__overlay', component_property="className", allow_duplicate=True),
+    [Output(component_id='section-1__add-new-container', component_property='className', allow_duplicate=True),
+     Output(component_id='section-1__data-container', component_property='className', allow_duplicate=True),
+     Output(component_id='section-1__overlay', component_property='className', allow_duplicate=True)],
     Input(component_id='card-total-workouts', component_property='n_clicks'),
     State(component_id='section-1__overlay', component_property='className'),
     prevent_initial_call=True
 )
 def toggle_overlay(n_clicks, current_style):
     if n_clicks and n_clicks > 0:
-        return "overlay"
-    return "overlay hidden"
+        return ["hidden", "", "overlay"]
+    return ["hidden", "hidden", "hidden"]
 
 # @app.callback(
 #     Output(component_id='section-1__overlay', component_property="className", allow_duplicate=True),

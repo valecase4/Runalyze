@@ -97,6 +97,22 @@ body {
     padding: 0px 20px;
 }
 
+#section-1__add-new-workout {
+    background-color: rgb(99, 172, 255);
+    color: white;
+    padding: 10px 20px;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+#section-1__add-new-workout:hover {
+    background-color: blue;
+    transform: scale(1.1);
+}
+
 .overlay {
     position: fixed;
     top: 0;
@@ -123,6 +139,11 @@ body {
     border-radius: 10px;
     overflow-y: auto;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    display: block;
+}
+
+#section-1__data-container.hidden {
+    display: none;
 }
 
 .filter-btn {
@@ -165,6 +186,16 @@ body {
     transform: scale(1.1);
 }
 
+#section-1__add-new-container {
+    width: 80%;
+    height: 80vh;
+    background-color: white;
+    display: block;
+}
+
+#section-1__add-new-container.hidden {
+    display: none;
+}
 
 
 /* SECTION 2 */
