@@ -147,9 +147,19 @@ app.layout = html.Div([
                             'textAlign': 'center',
                             'padding': '10px',
                             'cursor': 'pointer'
-                        }
+                        },
+                        accept='.png'
                     ),
-                    html.Div(id='output-image-upload')
+                    html.Div(id='output-image-upload'),
+                    html.Div(
+                        id='upload-workout-data',
+                        children=[
+                            html.Button(
+                                id='upload-workout-data__btn',
+                                children=["Upload"]
+                            )
+                        ]
+                        )
                     ]
             ),
             html.Button(
@@ -401,10 +411,11 @@ def parse_contents(contents):
 @callback(
         Output(component_id='output-image-upload', component_property='children'),
         Input(component_id="section-1__upload-workout", component_property='contents'),
-        # [State(component_id='section-1__upload-workout', component_property='filename'),
-        # State(component_id='section-1__upload-workout', component_property='last_modified')]
+        [State(component_id='section-1__upload-workout', component_property='filename'),
+        State(component_id='section-1__upload-workout', component_property='last_modified')]
 )
-def upload_workout(list_of_contents):
+def upload_workout(list_of_contents, list_of_names, list_of_dates):
+    print(list_of_names, list_of_dates)
     if list_of_contents is not None:
         children = [
             parse_contents(list_of_contents)

@@ -164,6 +164,10 @@ body {
     background-color: rgb(0, 97, 136);
 }
 
+.svg-inline--fa {
+    color: white;
+} 
+
 #section-1__close-overlay-btn {
     background-color: red;
     border: none;
@@ -249,6 +253,30 @@ body {
 
 .section-1__image-output > img:hover {
     transform: scale(1.6)
+}
+
+#upload-workout-data {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#upload-workout-data__btn {
+    background-color: rgb(99, 172, 255);
+    color: white;
+    padding: 5px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+#upload-workout-data__btn:hover {
+    background-color: blue;
+    transform: scale(1.1);
 }
 
 
