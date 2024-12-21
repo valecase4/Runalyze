@@ -189,12 +189,66 @@ body {
 #section-1__add-new-container {
     width: 80%;
     height: 80vh;
-    background-color: white;
-    display: block;
+    background-color: #2c2f33;
+    color: white;
+    display: flex;
+    flex-direction: column;
 }
 
 #section-1__add-new-container.hidden {
     display: none;
+}
+
+#section-1__add-new-container > h3 {
+    flex-shrink: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+#section-1__upload-workout {
+    flex-shrink: 0;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#section-1__upload-workout > div {
+    transition: all 0.3s ease; 
+}
+
+#section-1__upload-workout > div:hover {
+    background-color: rgba(100, 100, 100, 0.2);
+    border-color: #4C8FD2;
+    color: #4C8FD2;
+}
+
+#output-image-upload {
+    flex-grow: 1;
+    position: relative;
+}
+
+.section-1__image-output {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-1__image-output > img {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.section-1__image-output > img:hover {
+    transform: scale(1.6)
 }
 
 

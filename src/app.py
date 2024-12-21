@@ -91,26 +91,66 @@ app.layout = html.Div([
                         id="workout-dataset-table",
                         columns=[{"name": i, "id": i} for i in df[['Workout ID', 'Date', 'Distance (km)', 'Calories (kcal)', 'Average Pace (min/km)']].columns],
                         data=df.to_dict('records'),
+                        sort_action="native",
+                        sort_mode='single',
                         style_header={
-                            'backgroundColor': '#1f2c34',
+                            'backgroundColor': '#04AA6D',
                             'color': 'white',
                             'fontWeight': 'bold',
                             'padding': '10px',
+                            'fontSize': '16px',
+                            'cursor': 'pointer'
                         },
                         style_cell={
-                            'backgroundColor': '#2c2f33',
+                            "backgroundColor": "#2a2e3b",
                             'color': 'white',
                             'textAlign': 'center',
-                            'padding': '10px'
-                        }
+                            'padding': '10px',
+                            'cursor': 'pointer'
+                        },
+                        style_data_conditional=[
+                            {
+                                "if": {"row_index": "odd"},
+                                "backgroundColor": "#2f3345"
+                            },
+                            {
+                                "if": {"state": "active"}, 
+                                "backgroundColor": "rgb(0, 140, 196)",
+                                "color": "white",
+                                "fontWeight": "bold",
+                                "border": "none"
+                            },
+                            {
+                                "if": {"state": "selected"},
+                                "backgroundColor": "rgb(0, 140, 196)",
+                                "color": "#ffffff",
+                                "border": "none",
+                            },
+                        ],
                     )
                 ]
             ),
             html.Div(
                 id='section-1__add-new-container',
                 children=[
-                    html.H3("Test: Add New Workout")
-                ]
+                    # html.H3("Add New Workout"),
+                    dcc.Upload(
+                        id='section-1__upload-workout',
+                        children=[
+                            html.A("Select File")
+                        ],
+                        style={
+                            'width': '40%',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'padding': '10px',
+                            'cursor': 'pointer'
+                        }
+                    ),
+                    html.Div(id='output-image-upload')
+                    ]
             ),
             html.Button(
                 children="x",
@@ -348,6 +388,28 @@ app.layout = html.Div([
     #     ]
     # )
 ])
+
+def parse_contents(contents):
+    return html.Div(
+        className='section-1__image-output',
+        children=
+        [
+            html.Img(src=contents)
+        ]
+    )
+
+@callback(
+        Output(component_id='output-image-upload', component_property='children'),
+        Input(component_id="section-1__upload-workout", component_property='contents'),
+        # [State(component_id='section-1__upload-workout', component_property='filename'),
+        # State(component_id='section-1__upload-workout', component_property='last_modified')]
+)
+def upload_workout(list_of_contents):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(list_of_contents)
+        ]
+        return children
 
 @app.callback(
         [Output(component_id='section-1__add-new-container', component_property='className', allow_duplicate=True),

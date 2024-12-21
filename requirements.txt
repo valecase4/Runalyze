@@ -2,3 +2,6 @@ pandas==2.2.3
 dash==2.18.2
 dash-extensions==1.0.19
 dash-ag-grid==31.2.0
+pytesseract==0.1.8
+pillow==11.0.0
+opencv-python==4.10.0.84
