@@ -2,13 +2,23 @@ import dash
 from dash import Dash, html, dcc, callback, Output, Input, State
 import plotly.express as px
 import pandas as pd
+import pytesseract.pytesseract
 from utils import *
 from utilsDir.section1.main import SectionOne
 from utilsDir.section1.strategies import FullDatasetStrategy, LastYearStrategy, LastMonthStrategy
 from graphs import *
 from dash.dash_table import DataTable
+import base64
+import numpy as np
+import cv2
+import pytesseract
+import os
+
+tesseract_path = os.path.join(os.path.dirname(__file__), 'tesseract', 'Tesseract-OCR', 'tesseract.exe')
+pytesseract.pytesseract.tesseract_cmd =  tesseract_path
 
 df = pd.read_csv("../data/raw/training_data.csv")
+df['Date'] = pd.to_datetime(df['Date'], format="mixed")
 
 section_one = SectionOne(df, FullDatasetStrategy())
 
@@ -415,8 +425,78 @@ def parse_contents(contents):
         State(component_id='section-1__upload-workout', component_property='last_modified')]
 )
 def upload_workout(list_of_contents, list_of_names, list_of_dates):
-    print(list_of_names, list_of_dates)
     if list_of_contents is not None:
+        _, content_string = list_of_contents.split(",")
+        decoded = base64.b64decode(content_string)
+        np_arr = np.frombuffer(decoded, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+
+        workout = {}
+
+        # img = cv2.imread(thresh)
+
+        workout["Workout ID"] = [""]
+
+        date = img[50:200, 200:500]
+        date = pytesseract.pytesseract.image_to_string(date)
+        date = date.split(",")[1].strip()
+        workout["Date"] = [date]
+        
+        main_stats = img[300:500, 0:img.shape[1]]
+        main_stats = pytesseract.pytesseract.image_to_string(main_stats)
+        main_stats = main_stats.split("\n")[0]
+        main_stats = main_stats.split(" ")
+        distance = float(main_stats[0].replace(",", "."))
+        duration = main_stats[1]
+        calories = main_stats[2]
+
+        workout["Distance (km)"] = [distance]
+        workout["Duration (min)"] = [duration]
+        workout["Calories (kcal)"] = [int(calories)]
+
+        average_pace = thresh[500:650, thresh.shape[1] // 2:thresh.shape[1]]
+        average_pace = pytesseract.pytesseract.image_to_string(average_pace)
+        average_pace = float(average_pace.split(" ")[0].replace(":", "."))
+        workout["Average Pace (min/km)"] = [average_pace]
+
+        average_speed = thresh[650:780, thresh.shape[1] // 2:thresh.shape[1]]
+        average_speed = pytesseract.pytesseract.image_to_string(average_speed)
+        workout["Average Speed (km/h)"] = [float(average_speed.split(" ")[0].replace(",", "."))]
+
+        max_speed = thresh[780:930, thresh.shape[1] // 2:thresh.shape[1]]
+        max_speed = pytesseract.pytesseract.image_to_string(max_speed)
+        max_speed = float(max_speed.split(" ")[0].replace(",", "."))
+        workout["Max Speed (km/h)"] = [max_speed]
+
+        elevation_gain = thresh[930:1050, thresh.shape[1] // 2:thresh.shape[1]]
+        elevation_gain = pytesseract.pytesseract.image_to_string(elevation_gain)
+        workout["Elevation Gain (m)"] = [elevation_gain.replace("m", "")]
+
+        elevation_loss = thresh[1050:1180, thresh.shape[1] // 2:thresh.shape[1]]
+        elevation_loss = pytesseract.pytesseract.image_to_string(elevation_loss)
+        workout["Elevation Loss (m)"] = [elevation_loss.replace("m", "")]
+        
+        start_time = thresh[1440:1580, thresh.shape[1] // 2:thresh.shape[1]]
+        start_time = pytesseract.pytesseract.image_to_string(start_time)
+        workout["Start Time"] = [start_time]
+ 
+        workout["Temperature (C)"] = [""]
+        workout["Wind Speed (km/h)"] = [""]
+        workout["Humidity (%)"] = [""]
+
+        global df
+
+        row = pd.DataFrame(workout)
+        df = pd.concat([df, row], ignore_index=True)
+        df.to_csv(r"C:\Users\Vale\Runalyze2\data\raw\training_data.csv", index=False)
+
+        # # print(text)
+
+        print(workout)
+
         children = [
             parse_contents(list_of_contents)
         ]

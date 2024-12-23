@@ -19,7 +19,7 @@ elevation_gain_section = img[930:1050, 120:img.shape[1]]
 elevation_loss_section = img[1050:1180, 120:img.shape[1]]
 start_time_section = img[1440:1580, 120:img.shape[1]]
 
-cv2.imshow("cropped", start_time_section)
+cv2.imshow("cropped", date_section)
 
 text = pytesseract.image_to_string(average_pace_section, lang="ita")
 print(text)
